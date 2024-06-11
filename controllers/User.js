@@ -1,21 +1,38 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+
 const User = require('../models/User');
 
+// Check le mot de passe //
 exports.signup = (req, res, next) => {
-    bcrypt.hash(req.body.password, 10)
-      .then(hash => {
-        const user = new User({
-          email: req.body.email,
-          password: hash
-        });
-        user.save()
-          .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
-          .catch(error => res.status(400).json({ error }));
-      })
-      .catch(error => res.status(500).json({ error }));
-  };
+    const password = req.body.password;
+    
+    // Vérification de la longueur du mot de passe
+    if (password.length < 5) {
+        return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 5 caractères.' });
+    }
+    
+    // Vérification des caractères spécifiques
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/;
+    if (!password.match(passwordRegex)) {
+        return res.status(400).json({ error: 'Le mot de passe doit contenir au moins une majuscule, un chiffre et un caractère spécial.' });
+    }
 
+    bcrypt.hash(password, 10)
+        .then(hash => {
+            const user = new User({
+                email: req.body.email,
+                password: hash
+            });
+            user.save()
+                .then(() => res.status(201).json({ message: 'Utilisateur créé !' }))
+                .catch(error => res.status(400).json({ error }));
+        })
+        .catch(error => res.status(500).json({ error }));
+};
+
+
+// Check l'identifiant de l'utilisateur //
   exports.login = (req, res, next) => {
     User.findOne({ email: req.body.email })
         .then(user => {
