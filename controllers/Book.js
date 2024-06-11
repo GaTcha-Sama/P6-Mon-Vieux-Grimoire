@@ -12,9 +12,9 @@ exports.createBook = (req, res, next) => {
         averageRating: 0,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });  
-    thing.save()
+    book.save()
     .then(() => res.status(201).json({message: 'Livre enregistré !'}))
-    .catch(error => res.status(400).json( { error }))
+    .catch(error => res.status(400).json( { error }));
  };
 
 exports.modifyBook = (req, res, next) => {

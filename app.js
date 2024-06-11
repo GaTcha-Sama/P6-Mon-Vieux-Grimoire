@@ -5,15 +5,15 @@ const path = require('path');
 const bookRoutes = require('./routes/Book');
 const userRoutes = require('./routes/User');
 
+// Création d'une application Express //
+const app = express();
+
 // Connexion à MongoDB //
 mongoose.connect('mongodb+srv://GaTcha-Sama:Chateaulin-29@gatcha.wpin6p4.mongodb.net/?retryWrites=true&w=majority&appName=GaTcha',
     { useNewUrlParser: true,
       useUnifiedTopology: true })
     .then(() => console.log('Connexion à MongoDB réussie !'))
     .catch(() => console.log('Connexion à MongoDB échouée !'));
-
-// Création d'une application Express //
-const app = express();
 
 // CORS //
 app.use((req, res, next) => {
