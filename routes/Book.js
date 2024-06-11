@@ -5,12 +5,12 @@ const multer = require('../middleware/multer-config');
 
 const booksCtrl = require('../controllers/Book');
 
-router.post('/', auth, multer, booksCtrl.createBook);
-router.post('/:id/rating', auth, booksCtrl.ratingBook);
-router.put('/:id', auth, booksCtrl.modifyBook);
-router.delete('/:id', auth, booksCtrl.deleteBook);
-router.get('/:id', auth, booksCtrl.getOneBook);
-router.get('/', auth, booksCtrl.getAllBooks);
-router.get('/bestrating', auth, booksCtrl.getBestRatings);
+router.post('/', auth, booksCtrl.createBook); // Créer livre //
+router.post('/:id/rating', auth, multer, booksCtrl.ratingBook); // Noter livre //
+router.put('/:id', auth, multer, booksCtrl.modifyBook); // MAJ livre //
+router.delete('/:id', auth, booksCtrl.deleteBook); // Supprimer livre //
+router.get('/:id', auth, booksCtrl.getOneBook); // Obtenir un livre //
+router.get('/', auth, booksCtrl.getAllBooks); // Obtenir tous les livres //
+router.get('/bestrating', auth, booksCtrl.getBestRatings); // Obtenir les meilleurs livres //
 
 module.exports = router;
