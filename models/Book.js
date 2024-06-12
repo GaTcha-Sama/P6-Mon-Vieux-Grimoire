@@ -11,20 +11,20 @@ const bookSchema = mongoose.Schema({
     averageRating: { type: Number, required: true },
 });
 
- // Méthode d'instance pour calculer la moyenne des notes //
-bookSchema.methods.calculateAverageRating = () => {
-    if (this.ratings.length > 0) {                                                          // Si des notes existent //
-        const totalNotes = this.ratings.reduce((total, rating) => total + rating.grade, 0); // totalNotes stocke les notes, reduce calcule la somme des notes //
-        this.averageRating = totalNotes / this.ratings.length;                              // Calcul de la moyenne des notes //
+const averageRating = async(book) => {
+
+    if (book.ratings && book.ratings.length > 0) {                                          // Si des notes existent //
+        const totalNotes = book.ratings.reduce((total, rating) => total + rating.grade, 0); // totalNotes stocke les notes, reduce calcule la somme des notes //
+        book.averageRating = totalNotes / book.ratings.length;                              // Calcul de la moyenne des notes //
     } else {
-        this.averageRating = 0; // Si pas de notes //
+        book.averageRating = 0; // Si pas de notes //
     }
-    return this.averageRating; // Moyenne calculée des notes //
+    return book.averageRating; // Moyenne calculée des notes //
 };
 
 // Middleware "pre('save')" pour mettre à jour la moyenne avant de sauvegarder //
 bookSchema.pre('save', (next) => {
-    this.calculateAverageRating();
+    averageRating(this)
     next();
 }); 
 

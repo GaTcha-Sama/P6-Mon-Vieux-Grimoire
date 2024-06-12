@@ -3,21 +3,34 @@ const fs = require('fs');
 
 // Création d'un livre //
 exports.createBook = (req, res, next) => {
-    const bookObject = JSON.parse(req.body.book); // Récupération des données et suppression des infos non-nécessaires //
+    let bookObject;
+    
+    try {
+        bookObject = JSON.parse(req.body.book);
+    } catch (error) {
+        return res.status(400).json({ message: 'Invalid JSON data in request body' });
+    }
+
     delete bookObject._id;
     delete bookObject._userId;
-    
+
+    if (!req.file || !req.file.filename) {
+        return res.status(400).json({ message: 'Image file is missing' });
+    }
+
     const book = new Book({
         ...bookObject,
         userId: req.auth.userId,
-        ratings: [],
-        averageRating: 0,
         imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}`
     });
+
     book.save()
-    .then(() => { res.status(201).json({message: 'Livre enregistré !'})})
-    .catch(error => { res.status(400).json( { error })});
-  };
+        .then(() => { res.status(201).json({ message: 'Livre enregistré !' }); })
+        .catch(error => { 
+            console.log(error)
+            res.status(400).json({ error }); 
+        });
+};
 
 // Modification d'un livre //
 exports.modifyBook = (req, res, next) => {
@@ -84,8 +97,8 @@ exports.ratingBook = (req, res, next) => {
     }
     Book.findOne({ _id: req.params.id }) // Récupération du livre voulu //
         .then((book) => {
-            if (book.ratings.find(r => r.userId === req.auth.userId)) { // Vérifiaction si l'user n'a pas déjà mis une note //
-                return res.status(400).json({ message: 'User already voted for this book' });
+            if (book.ratings.find(r => r.userId === req.auth.userId)) { // Vérification si l'user n'a pas déjà mis une note //
+                return res.status(400).json({ message: 'Vous avez déjà noté ce livre' });
             } else {
                 book.ratings.push(updatedRating); // On pousse la notation dans un tableau //
                 book.averageRating = (book.averageRating * (book.ratings.length - 1) + updatedRating.grade) / book.ratings.length; // Classe la note dans le tableau //
