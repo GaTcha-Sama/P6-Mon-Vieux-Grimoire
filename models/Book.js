@@ -11,7 +11,7 @@ const bookSchema = mongoose.Schema({
     averageRating: { type: Number, required: true },
 });
 
-// Méthode d'instance pour calculer la moyenne des notes
+ // Méthode d'instance pour calculer la moyenne des notes //
 bookSchema.methods.calculateAverageRating = () => {
     if (this.ratings.length > 0) {                                                          // Si des notes existent //
         const totalNotes = this.ratings.reduce((total, rating) => total + rating.grade, 0); // totalNotes stocke les notes, reduce calcule la somme des notes //
@@ -26,6 +26,6 @@ bookSchema.methods.calculateAverageRating = () => {
 bookSchema.pre('save', (next) => {
     this.calculateAverageRating();
     next();
-});
+}); 
 
 module.exports = mongoose.model('Book', bookSchema);

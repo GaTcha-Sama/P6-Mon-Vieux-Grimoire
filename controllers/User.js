@@ -13,7 +13,7 @@ exports.signup = (req, res, next) => {
     }
     
     // Vérification des caractères spécifiques
-    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/;
+    const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{5,}$/; // C'est un regex donc écriture normale pour vérifier les caractères //
     if (!password.match(passwordRegex)) {
         return res.status(400).json({ error: 'Le mot de passe doit contenir au moins une majuscule, un chiffre et un caractère spécial.' });
     }

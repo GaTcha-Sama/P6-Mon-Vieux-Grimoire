@@ -26,9 +26,12 @@ app.use((req, res, next) => {
 // Rend les données exploitables en JSON //
 app.use(express.json());
 
-// Routes de l'application //
+// Middlewares qui définissent les routes //
 app.use('/api/books', bookRoutes);
 app.use('/api/auth', userRoutes);
+
+// Middleware pour les images //
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
+// Export de l'app pour le server //
 module.exports = app;
