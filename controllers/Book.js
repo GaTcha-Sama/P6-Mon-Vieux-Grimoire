@@ -98,9 +98,11 @@ exports.ratingBook = (req, res, next) => {
 // Récupération des meilleurs notations //
 exports.getBestRatings = (req, res, next) => {
     Book.find()
-        .sort({ averageRating: -1 }) // Tri des résultats par ordre décroissant //
-        .limit(3)                    // Limitation des résultats aux 3 meilleurs livres notés en moyenne //
-        .then((bestBooks) => res.status(200).json(bestBooks))
-        .catch(error => res.status(400).json({error}));
+        .sort({ averageRating: -1 }) // Classe les notes par ordre décroissant //
+        .limit(3)                    // Récupère les 3 meilleures notes //
+        .then((books) => {res.status(200).json(books);})
+        .catch((error) => {res.status(500).json({message:"Une erreur est survenue lors de la récupération des livres avec la meilleure note.", 
+                                                error: error,});
+        });
 };
 
