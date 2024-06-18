@@ -27,7 +27,6 @@ exports.createBook = (req, res, next) => {
     book.save()
         .then(() => { res.status(201).json({ message: 'Livre enregistré !' }); })
         .catch(error => { 
-            console.log(error)
             res.status(400).json({ error }); 
         });
 };
@@ -40,11 +39,21 @@ exports.modifyBook = (req, res, next) => {
     } : { ...req.body };
 
     delete updateBook._userId;
+    
     Book.findOne({_id: req.params.id})
         .then((book) => {
             if(book.userId != req.auth.userId) {
                 res.status(401).json({message: 'Non-autorisé !'})
             } else {
+                // Suppression ancienne image - respect du green code //
+                if (req.file) {
+                    const oldImageUrl = book.imageUrl;
+                    const oldImageName = oldImageUrl.split('/images/')[1];
+                    fs.unlink(`images/${oldImageName}`, (err) => {
+                        if (err) console.error('Error deleting old image:', err);
+                    });
+                }
+
                 Book.updateOne({_id: req.params.id}, {...updateBook, _id: req.params.id})
                     .then(() => res.status(200).json({message: 'Objet modifié !'}))
                     .catch(error => res.status(401).json({error}));
