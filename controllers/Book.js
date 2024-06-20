@@ -100,7 +100,7 @@ exports.ratingBook = (req, res, next) => {
         userId: req.auth.userId,
         grade: req.body.rating
     };
-    // Vérifiaction des notes //
+    // Vérification des notes //
     if (updatedRating.grade < 0 || updatedRating.grade > 5) {
         return res.status(400).json({ message: 'La note doit se trouver entre 0 et 5' });
     }
