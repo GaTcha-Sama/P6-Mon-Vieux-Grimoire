@@ -8,6 +8,9 @@ exports.createBook = (req, res, next) => {
     try {
         bookObject = JSON.parse(req.body.book);
     } catch (error) {
+        if (req.file) {
+            fs.unlink(`images/${req.file.filename}`, () => {});
+        }
         return res.status(400).json({ message: 'Invalid JSON data in request body' });
     }
 
@@ -27,6 +30,9 @@ exports.createBook = (req, res, next) => {
     book.save()
         .then(() => { res.status(201).json({ message: 'Livre enregistré !' }); })
         .catch(error => { 
+            if (req.file) {
+                fs.unlink(`images/${req.file.filename}`, () => {});
+            }
             res.status(400).json({ error }); 
         });
 };
