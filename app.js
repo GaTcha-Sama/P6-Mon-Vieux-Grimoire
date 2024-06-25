@@ -1,6 +1,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const path = require('path');
+require("dotenv").config();
 
 const bookRoutes = require('./routes/Book');
 const userRoutes = require('./routes/User');
@@ -9,7 +10,7 @@ const userRoutes = require('./routes/User');
 const app = express();
 
 // Connexion à MongoDB //
-mongoose.connect('mongodb+srv://GaTcha-Sama:Chateaulin-29@gatcha.wpin6p4.mongodb.net/?retryWrites=true&w=majority&appName=GaTcha',
+mongoose.connect(process.env.DB_URI,
     { useNewUrlParser: true,
       useUnifiedTopology: true })
     .then(() => console.log('Connexion à MongoDB réussie !'))

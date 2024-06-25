@@ -33,17 +33,28 @@ exports.createBook = (req, res, next) => {
 
 // Modification d'un livre //
 exports.modifyBook = (req, res, next) => {
-    const updateBook = req.file ? {
-        ...JSON.parse(req.body.book),
-        imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` 
-    } : { ...req.body };
+    let updateBook;
+    
+    try {
+        updateBook = req.file ? {
+            ...JSON.parse(req.body.book),
+            imageUrl: `${req.protocol}://${req.get('host')}/images/${req.file.filename}` 
+        } : { ...req.body };
 
-    delete updateBook._userId;
+        delete updateBook._userId; 
+    } catch (error) {
+        if (req.file) {
+            fs.unlink(`images/${req.file.filename}`, (err) => {
+                if (err) console.error(err);
+            });
+        }
+        return res.status(400).json({ error: 'Format invalide' });
+    }
     
     Book.findOne({_id: req.params.id})
         .then((book) => {
             if(book.userId != req.auth.userId) {
-                res.status(401).json({message: 'Non-autorisé !'})
+                res.status(403).json({message: 'Non-autorisé !'})
             } else {
                 // Suppression ancienne image - respect du green code //
                 if (req.file) {
@@ -55,7 +66,7 @@ exports.modifyBook = (req, res, next) => {
                 }
 
                 Book.updateOne({_id: req.params.id}, {...updateBook, _id: req.params.id})
-                    .then(() => res.status(200).json({message: 'Objet modifié !'}))
+                    .then(() => res.status(200).json({message: 'Livre modifié !'}))
                     .catch(error => res.status(401).json({error}));
             }
         })
@@ -67,12 +78,12 @@ exports.deleteBook = (req, res, next) => {
     Book.findOne({ _id: req.params.id})
         .then(book => {
             if(book.userId != req.auth.userId) { // Vérification si l'user est bien le même que l'auth //
-                res.status(401).json({message: 'Non-autorisé !'})
+                res.status(403).json({message: 'Non-autorisé !'})
             } else {
                 const filename = book.imageUrl.split('/images/')[1];
                 fs.unlink(`images/${filename}`, () => { // fs.unlink est l'action qui supprime le fichier et envoit un callback pour supprimer dans la database //
                     Book.deleteOne({_id: req.params.id})
-                        .then(() => res.status(200).json({message: 'Objet Supprimé !'}))
+                        .then(() => res.status(200).json({message: 'Livre Supprimé !'}))
                         .catch(error => res.status(401).json({error}));
                 });
             }
